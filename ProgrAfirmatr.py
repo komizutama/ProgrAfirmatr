@@ -10,11 +10,14 @@ from  AppKit import NSSpeechSynthesizer
 import time
 import sys
 import random
+
 nssp = NSSpeechSynthesizer
 voice="com.apple.speech.synthesis.voice.Alex"
 ve = nssp.alloc().init()
 ve.setVoice_(voice)
-oldEvent = ""
+recentSay = ["blank1", "blank2", "blank3", "blank4", "blank5"]
+say=""
+
 affirmations=[
 "You are being highly productive. ",
 "You are a great programmer. ", 
@@ -54,23 +57,28 @@ class AppDelegate(NSObject):
         mask = NSKeyDownMask
         NSEvent.addGlobalMonitorForEventsMatchingMask_handler_(mask, handler)
 
+def affChoice():
+    return affirmations[random.randrange(len(affirmations))]
+
 
 def handler(event):
     try:
         if not ve.isSpeaking():
-            ve.startSpeakingString_(affirmations[random.randrange(len(affirmations))])
-        #         time.sleep(1)
-        # if oldEvent != event:
-        #     ve.startSpeakingString_(affirmations[0])
-        #     while ve.isSpeaking():
-        #         time.sleep(1)
-        #         oldEvent = event
+
+            global say
+            global recentSay
+
+            say=affChoice()
+            while say in recentSay:
+                say=affChoice()
+            ve.startSpeakingString_(say)
+            recentSay.pop(0)
+            recentSay.append(say)
             
-        # print event
-#        NSLog(u"%@", event)#logging to console.... 
+
     except KeyboardInterrupt:
         AppHelper.stopEventLoop()
-        sys.exit(0)
+        sys.exit()
 
 def main():
 

@@ -10,6 +10,7 @@ from  AppKit import NSSpeechSynthesizer
 import time
 import sys
 import random
+import yaml
 
 nssp = NSSpeechSynthesizer
 voice="com.apple.speech.synthesis.voice.Alex"
@@ -17,39 +18,16 @@ ve = nssp.alloc().init()
 ve.setVoice_(voice)
 recentSay = ["blank1", "blank2", "blank3", "blank4", "blank5"]
 say=""
-
-affirmations=[
-"You are being highly productive. ",
-"You are a great programmer. ", 
-"How did you get so good at coding so fast? ", 
-"I love what you're doing there. ",
-"You are awesome. ", 
-"You are a programming God. ", 
-"This is amazing! ", 
-"You are a star programmer.  ", 
-"Guido Van Rossum wishes he was you. ", 
-"Ken Thompson dreams of coding as well as you are right now. ", 
-"I can't believe I get to be your computer. ", 
-"I'm going to tell all the other computers on the network how awesome you are. ", 
-"Don't stop Hopper! ", 
-"You're gonna get a Turing Award for this! ", 
-" I used to think John Skeet was cool, until now! ", 
-"Based off of what I'm seeing, you probably can explain N=NP. ", 
-"You type so fast! ",
-"I bet Bruce Schneier is tweeting about you right now. ",
-"You possess the qualities needed to be extremely successful. ",
-"You are conquering all bugs; you are defeating them steadily each moment. ",
-"You radiate beauty, charm, and grace. ",
-"Your work is supported by the universe; your genius manifests into reality before your eyes. ",
-"You are a powerhouse; Your code is indestructible. ", 
-"You are goign to be extremely successful! ",
-
-]
-
-voices = ["com.apple.speech.synthesis.voice.Alex", "com.apple.speech.synthesis.voice.Agnes",
+voices = [
+"com.apple.speech.synthesis.voice.Alex", 
+"com.apple.speech.synthesis.voice.Agnes",
 "com.apple.speech.synthesis.voice.Vicki",
 "com.apple.speech.synthesis.voice.Victoria",
-"com.apple.speech.synthesis.voice.Zarvox" ]
+"com.apple.speech.synthesis.voice.Zarvox" 
+]
+
+with open("CodeAffirmations.yaml") as f:
+    affirmations=yaml.load(f.read())
 
 
 class AppDelegate(NSObject):
@@ -62,6 +40,7 @@ def affChoice():
 
 
 def handler(event):
+    shouldExit=False
     try:
         if not ve.isSpeaking():
 
@@ -78,7 +57,10 @@ def handler(event):
 
     except KeyboardInterrupt:
         AppHelper.stopEventLoop()
-        sys.exit()
+        shouldExit=True
+
+    if shouldExit:
+        sys.exit(0)
 
 def main():
 
